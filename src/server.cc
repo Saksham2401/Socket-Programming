@@ -6,8 +6,7 @@
 
 #include "server.h"
 
-Server::Server() : acceptor(ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 8080)) {
-    // Constructor code for initialization
+Server::Server(const int port_num) : acceptor(ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port_num)) {
 }
 
 void Server::start() {
@@ -114,4 +113,6 @@ bool Server::authenticateUser(const std::string& username, const std::string& pa
 }
 
 int main() {
+    Server server(8080);
+    server.start();
 }

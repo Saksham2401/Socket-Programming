@@ -6,7 +6,7 @@
 
 class Server {
 public:
-    Server();
+    Server(const int port_num);
     void start();
 
 private:
