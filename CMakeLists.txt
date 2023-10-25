@@ -17,7 +17,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS filesystem)
+find_package(Boost REQUIRED COMPONENTS filesystem)
 
 target_link_libraries(${PROJECT_NAME}
 	Threads::Threads
