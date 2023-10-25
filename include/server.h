@@ -2,7 +2,7 @@
 #define SERVER_H
 
 #include <string>
-#include <boost/asio.hpp>
+#include <asio.hpp>
 
 class Server {
 public:
@@ -10,8 +10,8 @@ public:
     void start();
 
 private:
-    boost::asio::io_context ioContext;
-    boost::asio::ip::tcp::acceptor acceptor;
+    asio::io_context ioContext;
+    asio::ip::tcp::acceptor acceptor;
 
     bool createUserDirectory(const std::string& username);
     bool registerUser(const std::string& username, const std::string& password);

@@ -1,18 +1,19 @@
-#include "include/server.h"
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
+#include <asio.hpp>
 
-Server::Server() : acceptor(ioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 8080)) {
+#include "server.h"
+
+Server::Server() : acceptor(ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), 8080)) {
     // Constructor code for initialization
 }
 
 void Server::start() {
     while (true) {
-        boost::system::error_code ec;
-        boost::asio::ip::tcp::socket socket(ioContext);
+        asio::error_code ec;
+        asio::ip::tcp::socket socket(ioContext);
         
         acceptor.accept(socket, ec);
         if (ec) {
@@ -22,9 +23,11 @@ void Server::start() {
 
         try {
             // Read the client request (register or login)
-            boost::asio::streambuf requestBuffer;
-            boost::asio::read_until(socket, requestBuffer, "\n");
-            std::string request = boost::asio::buffer_cast<const char*>(requestBuffer.data());
+            asio::streambuf requestBuffer;
+            asio::read_until(socket, requestBuffer, "\n");
+
+            std::string request = asio::buffer_cast<const char*>(requestBuffer.data());
+
             requestBuffer.consume(requestBuffer.size());
 
             size_t colonPos = request.find(':');
@@ -108,4 +111,7 @@ bool Server::authenticateUser(const std::string& username, const std::string& pa
         }
     }
     return false;
+}
+
+int main() {
 }
