@@ -13,7 +13,7 @@ void Server::start() {
     while (true) {
         asio::error_code ec;
         asio::ip::tcp::socket socket(ioContext);
-        
+
         acceptor.accept(socket, ec);
         if (ec) {
             std::cerr << "Error accepting client: " << ec.message() << std::endl;
@@ -21,7 +21,7 @@ void Server::start() {
         }
 
         try {
-            // Read the client request (register or login)
+            // Read the client request
             asio::streambuf requestBuffer;
             asio::read_until(socket, requestBuffer, "\n");
 
@@ -29,32 +29,37 @@ void Server::start() {
 
             requestBuffer.consume(requestBuffer.size());
 
-            size_t colonPos = request.find(':');
-            if (colonPos == std::string::npos) {
+            // Split the request by ':' to separate the action, username, and password.
+            size_t firstColonPos = request.find(':');
+            if (firstColonPos == std::string::npos) {
                 std::cerr << "Invalid request format." << std::endl;
                 continue;
             }
 
-            std::string username = request.substr(0, colonPos);
-            std::string password = request.substr(colonPos + 1);
-            
-            if (request.find("REGISTER") == 0) {
-                // Registration
+            std::string action = request.substr(0, firstColonPos);
+            std::string remainingData = request.substr(firstColonPos + 1);
+
+            size_t secondColonPos = remainingData.find(':');
+            if (secondColonPos == std::string::npos) {
+                std::cerr << "Invalid request format." << std::endl;
+                continue;
+            }
+
+            std::string username = remainingData.substr(0, secondColonPos);
+            std::string password = remainingData.substr(secondColonPos + 1);
+
+            if (action == "REGISTER") {
+                // Solved from previous code
                 if (registerUser(username, password) && createUserDirectory(username)) {
-                    // Registration successful
                     std::cout << "Registration successful for " << username << std::endl;
                 } else {
-                    // Registration failed
                     std::cerr << "Registration failed for " << username << std::endl;
                 }
-            } else if (request.find("LOGIN") == 0) {
+            } else if (action == "LOGIN") {
                 // Login
                 if (authenticateUser(username, password)) {
-                    // Authentication successful
                     std::cout << "Authentication successful for " << username << std::endl;
-                    // Grant access or perform other actions here
                 } else {
-                    // Authentication failed
                     std::cerr << "Authentication failed for " << username << std::endl;
                 }
             } else {
@@ -97,7 +102,7 @@ bool Server::authenticateUser(const std::string& username, const std::string& pa
         std::cerr << "Error opening user file for reading." << std::endl;
         return false;
     }
-    
+
     std::string line;
     while (std::getline(userFile, line)) {
         size_t pos = line.find(':');
