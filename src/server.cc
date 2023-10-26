@@ -23,7 +23,7 @@ void Server::start() {
         try {
             // Read the client request
             asio::streambuf requestBuffer;
-            asio::read_until(socket, requestBuffer, "\n");
+            asio::read_until(socket, requestBuffer, '\0');  // Change delimiter to '\0'
 
             std::string request = asio::buffer_cast<const char*>(requestBuffer.data());
 
@@ -58,25 +58,31 @@ void Server::start() {
             std::string response;
 
             if (action == "REGISTER") {
-                
+                // Registration
                 if (registerUser(username, password) && createUserDirectory(username)) {
                     response = "Registration successful for " + username;
+                    std::cout << "Registration successful for " << username << std::endl;
                 } else {
                     response = "Registration failed because the user already exists";
+                    std::cerr << "Registration failed for " << username << std::endl;
                 }
             } else if (action == "LOGIN") {
-                
+                // Login
                 if (authenticateUser(username, password)) {
                     response = "Authentication successful for " + username;
+                    std::cout << "Authentication successful for " << username << std::endl;
                 } else {
                     response = "Authentication failed for " + username;
+                    std::cerr << "Authentication failed for " << username << std::endl;
                 }
             } else {
                 response = "Invalid request type.";
+                std::cerr << "Invalid request type." << std::endl;
             }
 
             // Send the response back to the client.
-            asio::write(socket, asio::buffer(response + "\n"));
+            response += '\0';  
+            asio::write(socket, asio::buffer(response));
         } catch (std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
