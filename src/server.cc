@@ -29,31 +29,20 @@ void Server::start() {
 
             requestBuffer.consume(requestBuffer.size());
 
-            // Split the request by ':' to separate the action, username, and password.
-            size_t firstColonPos = request.find(':');
-            if (firstColonPos == std::string::npos) {
-                std::cerr << "Invalid request format." << std::endl;
-                continue;
-            }
+            std::istringstream iss(request);
 
-            std::string action = request.substr(0, firstColonPos);
-            std::string remainingData = request.substr(firstColonPos + 1);
+            std::string action;
+            iss >> action;
 
-            size_t secondColonPos = remainingData.find(':');
-            if (secondColonPos == std::string::npos) {
-                std::cerr << "Invalid request format." << std::endl;
-                continue;
-            }
+            iss.ignore(); // ignore space
 
-            std::string username = remainingData.substr(0, secondColonPos);
-            std::string password = remainingData.substr(secondColonPos + 1);
+            std::string username;
+            std::getline(iss, username, ':');
 
-            // If "REGISTER" or "LOGIN" keyword is included in the request, remove it from the username.
-            if (username.find("REGISTER") == 0) {
-                username = username.substr(8);
-            } else if (username.find("LOGIN") == 0) {
-                username = username.substr(5);
-            }
+            iss.ignore(); // ignore colion
+
+            std::string password;
+            iss >> password;
 
             std::string response;
 
