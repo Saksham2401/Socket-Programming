@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Site BuildName="Linux-g++"
+	BuildStamp="20231026-0927-Experimental"
+	Name="Newstart"
+	Generator="ctest-3.27.4"
+	CompilerName="/usr/bin/g++"
+	CompilerVersion="13.2.0"
+	OSName="Linux"
+	Hostname="Newstart"
+	OSRelease="6.5.0-9-generic"
+	OSVersion="#9-Ubuntu SMP PREEMPT_DYNAMIC Sat Oct  7 01:35:40 UTC 2023"
+	OSPlatform="x86_64"
+	Is64Bits="1"
+	VendorString="GenuineIntel"
+	VendorID="Intel Corporation"
+	FamilyID="6"
+	ModelID="165"
+	ProcessorCacheSize="8192"
+	NumberOfLogicalCPU="8"
+	NumberOfPhysicalCPU="4"
+	TotalVirtualMemory="4095"
+	TotalPhysicalMemory="15813"
+	LogicalProcessorsPerPhysical="2"
+	ProcessorClockFrequency="4201.49"
+	>
+	<Testing>
+		<StartDateTime>Oct 26 15:21 IST</StartDateTime>
+		<StartTestTime>1698313896</StartTestTime>
+		<TestList/>
+		<EndDateTime>Oct 26 15:21 IST</EndDateTime>
+		<EndTestTime>1698313896</EndTestTime>
+		<ElapsedMinutes>0</ElapsedMinutes>
+	</Testing>
+</Site>

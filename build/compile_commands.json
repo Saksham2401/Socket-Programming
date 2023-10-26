@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/saksham/Desktop/boss-deliver/build",
+  "command": "/usr/bin/c++ -DASIO_STANDALONE -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_DYN_LINK -I/home/saksham/Desktop/boss-deliver/include -isystem /home/saksham/Desktop/boss-deliver/asio/asio/include -isystem /home/saksham/Desktop/boss-deliver/asio/include  -o CMakeFiles/server.dir/src/server.cc.o -c /home/saksham/Desktop/boss-deliver/src/server.cc",
+  "file": "/home/saksham/Desktop/boss-deliver/src/server.cc",
+  "output": "CMakeFiles/server.dir/src/server.cc.o"
+},
+{
+  "directory": "/home/saksham/Desktop/boss-deliver/build",
+  "command": "/usr/bin/c++ -DASIO_STANDALONE -isystem /home/saksham/Desktop/boss-deliver/asio/asio/include -isystem /home/saksham/Desktop/boss-deliver/asio/include  -o CMakeFiles/client.dir/src/client.cc.o -c /home/saksham/Desktop/boss-deliver/src/client.cc",
+  "file": "/home/saksham/Desktop/boss-deliver/src/client.cc",
+  "output": "CMakeFiles/client.dir/src/client.cc.o"
+}
+]
