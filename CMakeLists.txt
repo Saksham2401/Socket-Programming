@@ -4,23 +4,32 @@ project(boss-deliver CXX)
 
 add_definitions(-DASIO_STANDALONE)
 
-add_executable(${PROJECT_NAME}
+add_executable(server
 	src/server.cc
 )
 
-target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
+add_executable(client
+	src/client.cc
+)
+
+target_include_directories(server SYSTEM PRIVATE
 	"asio/asio/include"
 	"asio/include"
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE
+target_include_directories(client SYSTEM PRIVATE
+	"asio/asio/include"
+	"asio/include"
+)
+
+target_include_directories(server PRIVATE
 	"include"
 )
 
 find_package(Threads REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(server
 	Threads::Threads
 	Boost::filesystem
 )
