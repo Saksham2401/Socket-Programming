@@ -23,13 +23,11 @@ void Server::start() {
         try {
             // Read the client request
             asio::streambuf requestBuffer;
-            asio::read_until(socket, requestBuffer, '\0');  // Change delimiter to '\0'
+            asio::read_until(socket, requestBuffer, "\0");  // Change delimiter to '\0'
 
             std::string request = asio::buffer_cast<const char*>(requestBuffer.data());
 
             requestBuffer.consume(requestBuffer.size());
-            std::cout << request << '\n';
-            socket.send(asio::buffer("fuck"));
 
             // Split the request by ':' to separate the action, username, and password.
             size_t firstColonPos = request.find(':');
