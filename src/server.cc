@@ -48,15 +48,22 @@ void Server::start() {
             std::string username = remainingData.substr(0, secondColonPos);
             std::string password = remainingData.substr(secondColonPos + 1);
 
+            // If "REGISTER" or "LOGIN" keyword is included in the request, remove it from the username.
+            if (username.find("REGISTER") == 0) {
+                username = username.substr(8);
+            } else if (username.find("LOGIN") == 0) {
+                username = username.substr(5);
+            }
+
             if (action == "REGISTER") {
-                // Solved from previous code
+                
                 if (registerUser(username, password) && createUserDirectory(username)) {
                     std::cout << "Registration successful for " << username << std::endl;
                 } else {
                     std::cerr << "Registration failed for " << username << std::endl;
                 }
             } else if (action == "LOGIN") {
-                // Login
+                
                 if (authenticateUser(username, password)) {
                     std::cout << "Authentication successful for " << username << std::endl;
                 } else {
