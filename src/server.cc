@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <filesystem.hpp>
+#include <filesystem>
 #include <asio.hpp>
 
 #include "server.h"
@@ -24,7 +24,7 @@ void Server::start() {
         try {
             // Read the client request
             asio::streambuf requestBuffer;
-            asio::read_until(socket, requestBuffer, '\0');  // Change delimiter to '\0'
+            asio::read_until(socket, requestBuffer, "\0");  // Change delimiter to '\0'
 
             std::string request = asio::buffer_cast<const char*>(requestBuffer.data());
 
@@ -83,10 +83,10 @@ void Server::start() {
 
 bool Server::createUserDirectory(const std::string& username) {
     asio::error_code ec;
-    std::filesystem::path::userDirectory = "user_directories/" + username;
+    std::filesystem::path userDirectory = "user_directories/" + username;
 
     // Check if the parent directory exists, and create it if not.
-    std::filesystem::path::parentDirectory = userDirectory.parent_path();
+    std::filesystem::path parentDirectory = userDirectory.parent_path();
     if (!std::filesystem::exists(parentDirectory)) {
         std::filesystem::create_directories(parentDirectory, ec);
         if (ec) {
