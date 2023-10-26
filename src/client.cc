@@ -69,6 +69,10 @@ int main(int argc, char ** argv) {
 			std::cout << "Sending register command to server... : " << command << '\n';
 			sock.send(asio::buffer(command));
 
+			std::string response(1 << 10, '\0');
+			sock.receive(asio::buffer(response));
+			std::cout << "Response : " << response << '\n';
+
 			continue;
 		}
 
@@ -84,6 +88,10 @@ int main(int argc, char ** argv) {
 			const std::string command = "login " + username + ':' + password;
 			std::cout << "Sending login command to server... : " << command << '\n';
 			sock.send(asio::buffer(command));
+
+			std::string response(1 << 10, '\0');
+			sock.receive(asio::buffer(response));
+			std::cout << "Response : " << response << '\n';
 
 			continue;
 		}
