@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <boost/filesystem.hpp>
+#include <filesystem.hpp>
 #include <asio.hpp>
 
 #include "server.h"
 
 Server::Server(const int port_num) : acceptor(ioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port_num)) {
+    std::filesystem::create_directory("user_directories");
 }
 
 void Server::start() {
@@ -23,7 +24,7 @@ void Server::start() {
         try {
             // Read the client request
             asio::streambuf requestBuffer;
-            asio::read_until(socket, requestBuffer, "\0");  // Change delimiter to '\0'
+            asio::read_until(socket, requestBuffer, '\0');  // Change delimiter to '\0'
 
             std::string request = asio::buffer_cast<const char*>(requestBuffer.data());
 
@@ -70,7 +71,7 @@ void Server::start() {
             }
 
             // Send the response back to the client.
-            response += '\0';  
+            response += '\0';
             asio::write(socket, asio::buffer(response));
         } catch (std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
@@ -81,15 +82,26 @@ void Server::start() {
 }
 
 bool Server::createUserDirectory(const std::string& username) {
-    boost::system::error_code ec;
-    boost::filesystem::path userDirectory = "user_directories/" + username;
+    asio::error_code ec;
+    std::filesystem::path::userDirectory = "user_directories/" + username;
 
-    if (!boost::filesystem::exists(userDirectory)) {
-        if (!boost::filesystem::create_directory(userDirectory, ec)) {
-            std::cerr << "Error creating directory for user " << username << ": " << ec.message() << std::endl;
+    // Check if the parent directory exists, and create it if not.
+    std::filesystem::path::parentDirectory = userDirectory.parent_path();
+    if (!std::filesystem::exists(parentDirectory)) {
+        std::filesystem::create_directories(parentDirectory, ec);
+        if (ec) {
+            std::cerr << "Error creating parent directory: " << ec.message() << std::endl;
             return false;
         }
     }
+
+    // Create the user's directory.
+    std::filesystem::create_directory(userDirectory, ec);
+    if (ec) {
+        std::cerr << "Error creating directory for user " << username << ": " << ec.message() << std::endl;
+        return false;
+    }
+
     return true;
 }
 
