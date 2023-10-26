@@ -23,7 +23,7 @@ void Server::start() {
         try {
             // Read the client request
             asio::streambuf requestBuffer;
-            asio::read_until(socket, requestBuffer, "\0");
+            asio::read_until(socket, requestBuffer, '\0');  // Change delimiter to '\0'
 
             std::string request = asio::buffer_cast<const char*>(requestBuffer.data());
 
@@ -50,24 +50,41 @@ void Server::start() {
             std::string username = remainingData.substr(0, secondColonPos);
             std::string password = remainingData.substr(secondColonPos + 1);
 
+            // If "REGISTER" or "LOGIN" keyword is included in the request, remove it from the username.
+            if (username.find("REGISTER") == 0) {
+                username = username.substr(8);
+            } else if (username.find("LOGIN") == 0) {
+                username = username.substr(5);
+            }
+
+            std::string response;
+
             if (action == "REGISTER") {
-                // Solved from previous code
+                // Registration
                 if (registerUser(username, password) && createUserDirectory(username)) {
+                    response = "Registration successful for " + username;
                     std::cout << "Registration successful for " << username << std::endl;
                 } else {
+                    response = "Registration failed because the user already exists";
                     std::cerr << "Registration failed for " << username << std::endl;
                 }
             } else if (action == "LOGIN") {
                 // Login
                 if (authenticateUser(username, password)) {
+                    response = "Authentication successful for " + username;
                     std::cout << "Authentication successful for " << username << std::endl;
                 } else {
-                    socket.send(asio::buffer("FUCK YOU MAN"));
+                    response = "Authentication failed for " + username;
                     std::cerr << "Authentication failed for " << username << std::endl;
                 }
             } else {
+                response = "Invalid request type.";
                 std::cerr << "Invalid request type." << std::endl;
             }
+
+            // Send the response back to the client.
+            response += '\0';  
+            asio::write(socket, asio::buffer(response));
         } catch (std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
@@ -90,12 +107,25 @@ bool Server::createUserDirectory(const std::string& username) {
 }
 
 bool Server::registerUser(const std::string& username, const std::string& password) {
-    std::ofstream userFile("users.txt", std::ios_base::app);
-    if (!userFile.is_open()) {
+    std::ifstream userFile("users.txt");
+    std::string line;
+
+    while (std::getline(userFile, line)) {
+        size_t pos = line.find(':');
+        if (pos != std::string::npos) {
+            std::string storedUsername = line.substr(0, pos);
+            if (storedUsername == username) {
+                return false; // User already exists
+            }
+        }
+    }
+
+    std::ofstream userFileOut("users.txt", std::ios_base::app);
+    if (!userFileOut.is_open()) {
         std::cerr << "Error opening user file for writing." << std::endl;
         return false;
     }
-    userFile << username << ':' << password << std::endl;
+    userFileOut << username << ':' << password << std::endl;
     return true;
 }
 
