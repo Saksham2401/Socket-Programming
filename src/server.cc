@@ -55,23 +55,28 @@ void Server::start() {
                 username = username.substr(5);
             }
 
+            std::string response;
+
             if (action == "REGISTER") {
                 
                 if (registerUser(username, password) && createUserDirectory(username)) {
-                    std::cout << "Registration successful for " << username << std::endl;
+                    response = "Registration successful for " + username;
                 } else {
-                    std::cerr << "Registration failed for " << username << std::endl;
+                    response = "Registration failed because the user already exists";
                 }
             } else if (action == "LOGIN") {
                 
                 if (authenticateUser(username, password)) {
-                    std::cout << "Authentication successful for " << username << std::endl;
+                    response = "Authentication successful for " + username;
                 } else {
-                    std::cerr << "Authentication failed for " << username << std::endl;
+                    response = "Authentication failed for " + username;
                 }
             } else {
-                std::cerr << "Invalid request type." << std::endl;
+                response = "Invalid request type.";
             }
+
+            // Send the response back to the client.
+            asio::write(socket, asio::buffer(response + "\n"));
         } catch (std::exception& e) {
             std::cerr << "Error: " << e.what() << std::endl;
         }
@@ -94,12 +99,25 @@ bool Server::createUserDirectory(const std::string& username) {
 }
 
 bool Server::registerUser(const std::string& username, const std::string& password) {
-    std::ofstream userFile("users.txt", std::ios_base::app);
-    if (!userFile.is_open()) {
+    std::ifstream userFile("users.txt");
+    std::string line;
+
+    while (std::getline(userFile, line)) {
+        size_t pos = line.find(':');
+        if (pos != std::string::npos) {
+            std::string storedUsername = line.substr(0, pos);
+            if (storedUsername == username) {
+                return false; // User already exists
+            }
+        }
+    }
+
+    std::ofstream userFileOut("users.txt", std::ios_base::app);
+    if (!userFileOut.is_open()) {
         std::cerr << "Error opening user file for writing." << std::endl;
         return false;
     }
-    userFile << username << ':' << password << std::endl;
+    userFileOut << username << ':' << password << std::endl;
     return true;
 }
 
